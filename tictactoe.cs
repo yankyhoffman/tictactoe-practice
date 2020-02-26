@@ -20,7 +20,7 @@ namespace dottictactoe
                         game.PlayTurn(playPosition);
                         break;
                     }
-                    catch (InvalidOptionException ex) {
+                    catch (ArgumentException ex) {
                         Console.WriteLine(ex.Message);
                     }
                 }
@@ -57,19 +57,19 @@ namespace dottictactoe
         public void PlayTurn(string inputPosition)
         {
             if (HasWinner)
-                throw new InvalidOptionException("Game already has a winner");
+                throw new ArgumentException("Game already has a winner");
 
             (int row, int col) = parsePosition(inputPosition);
 
             try
             {
                 if (board[row, col] != ' ')
-                    throw new InvalidOptionException($"'{inputPosition}' is already taken.");
+                    throw new ArgumentException($"'{inputPosition}' is already taken.");
                 board[row, col] = NextTurn;
             }
             catch (IndexOutOfRangeException)
             {
-                throw new InvalidOptionException($"'{inputPosition}' is out of legal bounds.");
+                throw new ArgumentException($"'{inputPosition}' is out of legal bounds.");
             }
 
             if (checkForWinner())
@@ -85,7 +85,7 @@ namespace dottictactoe
             int column;
 
             if (args.Length != 2 || !int.TryParse(args[0], out row) || !int.TryParse(args[1], out column))
-                throw new InvalidOptionException($"'{position}' is of invalid format. Expected format is 'INT,INT'");
+                throw new ArgumentException($"'{position}' is of invalid format. Expected format is 'INT,INT'");
 
             return (row, column);
         }
@@ -146,12 +146,5 @@ namespace dottictactoe
                 Console.WriteLine("\n    +---+---+---+");
             }
         }
-    }
-
-    class InvalidOptionException : Exception
-    {
-        public InvalidOptionException() {}
-        public InvalidOptionException(string message): base (message) {}
-        public InvalidOptionException(string message, Exception inner) : base (message, inner) {}
     }
 }

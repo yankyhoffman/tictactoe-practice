@@ -9,7 +9,7 @@ def main():
             try:
                 g.play_turn(play_position)
                 break
-            except InvalidOption as e:
+            except ValueError as e:
                 print(e)
 
         if g.winner:
@@ -45,14 +45,14 @@ class Game:
 
     def play_turn(self, position):
         if self._has_winner:
-            raise InvalidOption('Game already has a winner.')
+            raise ValueError('Game already has a winner.')
         row, col = self._parse_position(position)
         try:
             if self._board[row][col] != ' ':
-                raise InvalidOption(f"'{position}' is already taken.")
+                raise ValueError(f"'{position}' is already taken.")
             self._board[row][col] = self._next_turn
         except IndexError:
-            raise InvalidOption(f"'{position}' is out of legal bounds.")
+            raise ValueError(f"'{position}' is out of legal bounds.")
 
         if self._check_for_winner():
             self._has_winner = True
@@ -65,7 +65,7 @@ class Game:
             row, col = position.split(',')
             return int(row), int(col)
         except (TypeError, ValueError):
-            raise InvalidOption((
+            raise ValueError((
                 f"'{position}' is of invalid format. "
                 "Expected input in the format 'INT,INT'"
             ))
@@ -109,10 +109,6 @@ class Game:
             for cell in row:
                 print(f" {cell} |", end='')
             print('\n    +---+---+---+')
-
-
-class InvalidOption(Exception):
-    pass
 
 
 if __name__ == '__main__':
