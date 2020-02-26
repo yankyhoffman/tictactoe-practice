@@ -61,16 +61,9 @@ namespace dottictactoe
 
             (int row, int col) = parsePosition(inputPosition);
 
-            try
-            {
-                if (board[row, col] != ' ')
-                    throw new ArgumentException($"'{inputPosition}' is already taken.");
-                board[row, col] = NextTurn;
-            }
-            catch (IndexOutOfRangeException)
-            {
-                throw new ArgumentException($"'{inputPosition}' is out of legal bounds.");
-            }
+            if (board[row, col] != ' ')
+                throw new ArgumentException($"'{inputPosition}' is already taken.");
+            board[row, col] = NextTurn;
 
             if (checkForWinner())
                 HasWinner = true;
@@ -86,6 +79,11 @@ namespace dottictactoe
 
             if (args.Length != 2 || !int.TryParse(args[0], out row) || !int.TryParse(args[1], out column))
                 throw new ArgumentException($"'{position}' is of invalid format. Expected format is 'INT,INT'");
+
+            row--;
+            column--;
+            if (!(row >= 0 && row < 3) || !(column >= 0 && column < 3))
+                throw new ArgumentException($"'{position}' is out of legal bounds.");
 
             return (row, column);
         }
@@ -136,14 +134,18 @@ namespace dottictactoe
 
         public void DisplayBoard()
         {
-            Console.WriteLine("     #,0 #,1 #,2 ");
-            Console.WriteLine("    +---+---+---+");
-            for (int i = 0; i < 3; i++)
+            Console.WriteLine("+---+---+---+");
+            for (int row = 0; row < 3; row++)
             {
-                Console.Write($"{i},# |");
-                for (int j = 0; j < 3; j++)
-                    Console.Write($" {board[i, j]} |");
-                Console.WriteLine("\n    +---+---+---+");
+                Console.Write("|");
+                for (int col = 0; col < 3; col++)
+                {
+                    if (board[row, col] == ' ')
+                        Console.Write($"{row + 1},{col + 1}|");
+                    else
+                        Console.Write($" {board[row, col]} |");
+                }
+                Console.WriteLine("\n+---+---+---+");
             }
         }
     }

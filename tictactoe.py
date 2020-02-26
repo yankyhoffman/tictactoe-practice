@@ -46,13 +46,11 @@ class Game:
     def play_turn(self, position):
         if self._has_winner:
             raise ValueError('Game already has a winner.')
+
         row, col = self._parse_position(position)
-        try:
-            if self._board[row][col] != ' ':
-                raise ValueError(f"'{position}' is already taken.")
-            self._board[row][col] = self._next_turn
-        except IndexError:
-            raise ValueError(f"'{position}' is out of legal bounds.")
+        if self._board[row][col] != ' ':
+            raise ValueError(f"'{position}' is already taken.")
+        self._board[row][col] = self._next_turn
 
         if self._check_for_winner():
             self._has_winner = True
@@ -63,12 +61,17 @@ class Game:
     def _parse_position(position):
         try:
             row, col = position.split(',')
-            return int(row), int(col)
+            row_position, col_position = int(row) - 1, int(col) - 1
         except (TypeError, ValueError):
             raise ValueError((
                 f"'{position}' is of invalid format. "
                 "Expected input in the format 'INT,INT'"
             ))
+
+        if row_position not in range(3) or col_position not in range(3):
+            raise ValueError(f"'{position}' is out of legal bounds.")
+
+        return row_position, col_position
 
     def _alternate_turns(self):
         if self._next_turn == 'X':
@@ -102,13 +105,15 @@ class Game:
         self._has_winner = False
 
     def display_board(self):
-        print('     #,0 #,1 #,2 ')
-        print('    +---+---+---+')
-        for i, row in enumerate(self._board):
-            print(f"{i},# |", end='')
-            for cell in row:
-                print(f" {cell} |", end='')
-            print('\n    +---+---+---+')
+        print('+---+---+---+')
+        for row_ix, row in enumerate(self._board, start=1):
+            print('|', end='')
+            for col_ix, cell in enumerate(row, start=1):
+                if cell == ' ':
+                    print(f"{row_ix},{col_ix}|", end='')
+                else:
+                    print(f" {cell} |", end='')
+            print('\n+---+---+---+')
 
 
 if __name__ == '__main__':
